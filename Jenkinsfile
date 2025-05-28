@@ -1,44 +1,48 @@
-pipeline{
-  agent any
+pipeline {
+    agent any
 
-  tools{
-    gradle 'Gradle'
-    jdk 'JDK'
-  }
-
-  stages{
-    stage('checkout'){
-      steps{
-        git branch:'master',url: 'https://github.com/shar4440/MyMavenToGradle18.git'
-      }
+    tools {
+        gradle 'Gradle'   // Ensure this matches the Gradle name in Jenkins Global Tool Configuration
+        jdk 'JDK'         // Ensure this matches the JDK name in Jenkins Global Tool Configuration
     }
 
-    stage('initiation'){
-      steps{
-        sh 'gradle init --type pom'
-      }
+    environment {
+        JAVA_HOME = "${tool 'JDK'}"
+        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
 
-    stage('Build'){
-      steps{
-        sh 'gradle build'
-      }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/shar4440/MyMavenToGradle18.git'
+            }
+        }
+
+        stage('Initiation') {
+            steps {
+                sh 'gradle init --type pom'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'gradle build'
+            }
+        }
+
+        stage('Run') {
+            steps {
+                sh 'java -jar build/libs/MyMavenToGradle18-1.0-SNAPSHOT.jar'
+            }
+        }
     }
 
-    stage('run'){
-      steps{
-        sh 'java -jar build/libs/MyMavenToGradle18-1.0-SNAPSHOT.jar'
-      }
+    post {
+        success {
+            echo "✅ Build and run successful!"
+        }
+        failure {
+            echo "❌ Build or run failed!"
+        }
     }
-  }
-
-  post{
-    success{
-      echo "yes"
-    }
-
-    failure{
-      echo "nooooo!"
-    }
-  }
 }
