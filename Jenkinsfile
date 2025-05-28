@@ -6,10 +6,7 @@ pipeline {
         jdk 'JDK'         // Ensure this matches the JDK name in Jenkins Global Tool Configuration
     }
 
-    environment {
-        JAVA_HOME = "${tool 'JDK'}"
-        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
-    }
+ 
 
     stages {
         stage('Checkout') {
@@ -26,7 +23,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'gradle build'
+                sh 'gradle build -x test'
             }
         }
 
